@@ -84,7 +84,7 @@ window.__renderAt = (t) => { lastKey = null; renderAt(t); };
 
 // ---------- 播放控制 ----------
 const sound = new Sound(); sound.events = SFX;
-let playing = false, playT = 0, wallStart = 0, tAtStart = 0;
+let playing = false, playT = 4.6, wallStart = 0, tAtStart = 0;
 let voiceOn = false; const spoken = new Set();
 function now() { return playing ? tAtStart + (performance.now() - wallStart) / 1000 : playT; }
 function play(from) {
@@ -157,7 +157,7 @@ function buildUI() {
 })();
 
 // ---------- 启动 ----------
-(async function boot() {
+(async function boot() { try {
   buildUI(); resize();
   try {
     await Promise.race([document.fonts.load('80px "ZCOOL KuaiLe"'), new Promise((r) => setTimeout(r, 2500))]);
@@ -176,4 +176,4 @@ function buildUI() {
   $('#loadtxt').textContent = '准备好了';
   if (window.__CAPTURE__) { document.body.classList.add('capture'); window.__READY__ = true; return; }
   requestAnimationFrame(loop);
-})();
+} catch (e) { $('#loadtxt').textContent = '加载出错：' + (e && e.message || e) + '（请换用 Chrome / Edge / Safari 最新版，或刷新重试）'; console.error(e); } })();

@@ -16,15 +16,15 @@ COLOUR 深墨绿夜幕衬托奶油纸色，芥黄作唯一强调色
 TYPE   ZCOOL KuaiLe 做片名，Noto Sans SC 做字幕与控件
 LAYOUT 影片居中铺满，控件悬浮底部，空闲时隐去
 */
-:root{color-scheme:dark;--bg:#1d2622;--paper:#f6ecd8;--ink:#3b2a1c;--mustard:#e0a92e;--teal:#2f6f73}
+:root{color-scheme:light;--bg:#efe4cf;--paper:#f6ecd8;--ink:#3b2a1c;--mustard:#e0a92e;--teal:#2f6f73}
 *{box-sizing:border-box;min-width:0}
-html,body{margin:0;height:100%;background:var(--bg);overflow:hidden;font:16px/1.5 "Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;color:var(--paper)}
-#stage{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 45%,#2a3530 0%,#141a17 100%)}
-#frame{position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04);border-radius:6px}
+html,body{margin:0;height:100%;background:var(--bg);color-scheme:light;overflow:hidden;font:16px/1.5 "Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;color:var(--paper)}
+#stage{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 45%,#f6eddb 0%,#e3d3b4 100%)}
+#frame{position:relative;overflow:hidden;box-shadow:0 24px 60px rgba(90,60,30,.28),0 0 0 1px rgba(90,60,30,.08);border-radius:6px;background:#e9dcc4}
 #c{display:block}
 #vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(130% 100% at 50% 50%,transparent 58%,rgba(40,24,10,.38) 100%)}
 #grain{position:absolute;inset:-10px;pointer-events:none;opacity:.07;mix-blend-mode:overlay}
-#fade{position:absolute;inset:0;background:#120d08;pointer-events:none;opacity:1}
+#fade{position:absolute;inset:0;background:#120d08;pointer-events:none;opacity:0}
 #end{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;font-family:"ZCOOL KuaiLe",sans-serif;color:var(--paper);font-size:calc(var(--fw,1280px)*.06);letter-spacing:.2em}
 #sub{position:absolute;left:50%;bottom:7.5%;transform:translateX(-50%) rotate(-.6deg);max-width:80%;padding:.35em .9em .4em;background:rgba(250,242,226,.94);color:var(--ink);border-radius:3px;font-size:calc(var(--fw,1280px)*.0215);font-weight:700;line-height:1.35;box-shadow:0 3px 0 rgba(0,0,0,.12),0 8px 18px rgba(0,0,0,.18);opacity:0;transition:opacity .12s;text-align:center;white-space:nowrap}
 #sub.on{opacity:1}
@@ -54,7 +54,7 @@ body:not(.ready) #ctl,body:not(.started) #ctl{display:none}
 #time,#shot{font-size:13px;color:rgba(255,248,232,.8);white-space:nowrap;font-variant-numeric:tabular-nums}
 #shot{grid-column:1/-1;order:-1;font-size:13px;color:rgba(255,248,232,.7)}
 /* 封面 */
-#cover{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(90% 80% at 50% 40%,rgba(36,30,22,.25),rgba(14,11,8,.82));transition:opacity .6s;z-index:5}
+#cover{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(90% 80% at 50% 40%,rgba(246,237,219,.35),rgba(120,90,55,.45));transition:opacity .6s;z-index:5}
 #cover.gone{opacity:0;pointer-events:none}
 .card{background:var(--paper);color:var(--ink);padding:clamp(18px,3.2vw,40px) clamp(22px,4vw,54px);border-radius:4px;transform:rotate(-1.2deg);box-shadow:0 2px 0 #d8c7a4,0 18px 50px rgba(0,0,0,.45);text-align:center;max-width:min(560px,86%);position:relative}
 .card::before{content:"";position:absolute;left:50%;top:-14px;width:110px;height:28px;transform:translateX(-50%) rotate(2deg);background:rgba(224,169,46,.75)}

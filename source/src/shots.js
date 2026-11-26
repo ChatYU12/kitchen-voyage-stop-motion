@@ -101,7 +101,7 @@ shot({
   id: '01', name: '厨房全景', dur: 8,
   cam: (t) => ({ pos: kf(t, [[0, [0.6, 7.4, 28]], [3.0, [0.4, 7.2, 27]], [8, [-2.4, 5.4, 18.5]]], easeInOut), look: kf(t, [[0, [0, 3.4, -0.6]], [3.0, [-0.3, 3.4, -0.6]], [8, [-3.6, 2.8, -0.8]]], easeInOut), fov: 34 }),
   shadow: { c: [0, 2, 0], r: 16 },
-  fadeIn: [0, 1.3],
+  fadeIn: [0, 0.8],
   update(W, t) {
     put(W.towel, -13.4, 0, 3.6, { ry: 0.25 });
     W.title.material.opacity = fade(null, t, 2.2, 3.6, 9, 10) * 0.92;

@@ -16,10 +16,18 @@ export const TEX = {};   // name -> THREE.Texture
 export async function loadAll(names, onProgress) {
   let done = 0;
   await Promise.all(names.map(async (n) => {
-    const img = new Image();
-    img.decoding = 'async';
-    img.src = assetURL(n);
-    await img.decode().catch(() => new Promise((res, rej) => { img.onload = res; img.onerror = rej; }));
+    let img;
+    for (let tries = 0; tries < 3; tries++) {
+      img = new Image(); img.decoding = 'async';
+      img.src = assetURL(n) + (tries ? (assetURL(n).startsWith('data:') ? '' : '?r=' + tries) : '');
+      const ok = await img.decode().then(() => true).catch(() => false);
+      if (ok && img.naturalWidth) break;
+      await new Promise((r) => setTimeout(r, 400 * (tries + 1)));
+    }
+    if (!img.naturalWidth) { // 实在加载不了：用 1x1 透明图顶上，不让整片卡住
+      const c = document.createElement('canvas'); c.width = c.height = 2; img = c; img.naturalWidth = 2; img.naturalHeight = 2;
+      console.warn('asset failed', n);
+    }
     IMG[n] = img;
     done++; onProgress && onProgress(done / names.length);
   }));
