@@ -123,9 +123,9 @@ shot({
   update(W, t) {
     const zr = (x) => rimZ(x) + 0.06, ry = BASIN.rimY + 0.07;
     // 阿圆、点点
-    const lean = kf(t, [[4.5, 0], [5.0, 0.42]], easeOut);
-    actor(W.yuan, t > 4.5 ? 'yuan_reach' : 'yuan_idle', -4.05, ry, zr(-4.05), { rx: lean, flip: t > 4.5 });
-    actor(W.dd, t > 4.6 ? 'diandian_point' : 'diandian_idle', -3.25, ry, zr(-3.25), { rx: lean * 0.9, flip: t > 4.6 });
+    const lean = kf(t, [[4.5, 0], [5.0, 0.18]], easeOut);
+    actor(W.yuan, t > 4.5 ? 'yuan_reach' : 'yuan_idle', -4.05, ry, zr(-4.05) + 0.05, { rx: lean });
+    actor(W.dd, t > 4.6 ? 'diandian_point' : 'diandian_idle', -3.25, ry, zr(-3.25) + 0.05, { rx: lean * 0.9 });
     // 小粒：踮脚 → 伸手 → 滑落
     const dropX = -2.0, dropZ = -3.75;
     if (t < 3.7) {
@@ -160,7 +160,7 @@ shot({
     put(W.waveD, kf(t, [[0, -3.0], [9, -2.2]], (x) => x), WL - 0.04 + bob(t, 0.8, 0.03), -0.9);
     // 豆荚漂过来
     const px = kf(t, [[0, 2.4], [3.0, lx + 0.25]], easeOut);
-    const spin = kf(t, [[5.0, 0], [5.8, 0.9], [6.6, -0.5], [7.4, 0.25], [8.2, 0]]);
+    const spin = kf(t, [[5.0, 0], [5.8, 0.45], [6.6, -0.3], [7.4, 0.15], [8.2, 0]]);
     const pzx = t > 5 ? kf(t, [[5, 0], [7.5, 0.35]]) : 0;
     if (t < 3.0) {
       // 小粒在水里扑腾
@@ -175,7 +175,7 @@ shot({
       if (t > 3.0 && t < 3.6) put(W.spray, lx, WL + 0.1, lz + 0.3, { s: 0.6, op: 1 - (t - 3) / 0.6 });
     }
     // 回水
-    if (t > 4.6 && t < 7.6) put(W.wave62, kf(t, [[4.6, -4.2], [7.6, 1.8]], (x) => x), WL - 0.1, lz + 0.6, { s: 0.9 });
+    if (t > 4.6 && t < 7.6) put(W.wave62, kf(t, [[4.6, -4.2], [7.6, 1.8]], (x) => x), WL - 0.06, lz + 1.05, { s: 0.5 });
     if (t > 5) ripple(W.ripS3, px, lz, 5.2, t, 2, 1.0, 3.2);
   },
 });
@@ -210,7 +210,8 @@ shot({
     // 木桨被推进船里
     if (t >= 7.4) {
       const k = kf(t, [[7.4, 0], [8.8, 1]], easeInOut);
-      put(W.paddle, lerp(cx + 2.9, cx + 0.5, k), lerp(0.08, 0.95, k), cz + 0.25, { rz: lerp(-1.3, -0.35, k), s: 0.9 });
+      const pp = kf(t, [[7.4, [cx + 2.9, 0.08, cz + 0.3, -1.3]], [8.2, [cx + 1.1, 1.75, cz + 0.3, -0.5]], [8.5, [cx + 0.7, 1.75, cz - 0.08, -0.3]], [9.0, [cx + 0.6, 0.75, cz - 0.08, -0.25]]]);
+      put(W.paddle, pp[0], pp[1], pp[2], { rz: pp[3], s: 0.9 });
       actor(W.dd, 'diandian_point', cx + 1.85 + lerp(1.2, 0, k) * 0, 0, cz + 0.05, { rx: lean, flip: true });
     }
   },
@@ -264,7 +265,7 @@ shot({
       put(W.wake, x - 1.6, WL + 0.02, z + 0.5, { s: clamp(k / 1.2) * 0.9 + 0.1, op: 0.9 });
       if (row) {
         const st = Math.sin((t - 5.6) * Math.PI * 1.6);
-        put(W.paddle, x + 1.05, WL + 0.55 + st * 0.08, z + 0.62, { rz: -0.9 + st * 0.35, s: 0.85 });
+        put(W.paddle, x + 1.0, WL + 0.5 + st * 0.08, z + 0.5, { rz: -0.9 + st * 0.35, s: 0.7 });
       }
       ripple(W.ripS1, bot.x + 0.9, z + 0.5, 4.15, t, 2, 0.8, 3.0);
     }
@@ -279,7 +280,7 @@ shot({
   update(W, t) {
     const up = -0.95; // 小人朝镜头后仰
     // 船
-    let bx = kf(t, [[0, -3.7], [3.2, -1.9], [5.0, -1.6], [6, -1.9], [9, -2.0]]);
+    let bx = kf(t, [[0, -3.9], [3.2, -2.6], [5.0, -2.3], [6, -2.5], [9, -2.6]]);
     let bz = kf(t, [[0, 2.0], [3.2, 1.5], [6, 1.6], [9, 1.7]]);
     let br = kf(t, [[0, 0.1], [3.2, -0.05], [5.0, 0.15], [6.0, 0.4], [8.6, 0.4 + Math.PI * 1.1]], easeInOut);
     put(W.boatTop, bx, WL + 0.02, bz, { rz: br, s: 0.9 });
@@ -291,12 +292,12 @@ shot({
     if (t < 6) put(W.paddle, bx + c * 0.9 + 0.1, WL + 0.3, bz + 0.65 + st * 0.15, { rx: up, rz: -0.8 + st * 0.3, s: 0.8 });
     put(W.eddy, bx - c * 1.6, WL + 0.03, bz + s * 1.6, { rz: -t * 1.2, s: 0.7, op: 0.85 });
     // 菜叶：慢慢横过来
-    const lx = kf(t, [[0, 1.8], [4, 0.4], [6, -0.1], [10, -0.3]]), lz = kf(t, [[0, -1.2], [5, 0.5], [10, 0.8]]);
-    const lr = kf(t, [[0, -1.0], [4.5, 0.25], [5.6, 1.1], [7, 1.3], [10, 1.5]]);
-    put(W.leafTop, lx, WL + 0.04, lz, { rz: lr });
+    const lx = kf(t, [[0, 2.2], [4.5, 1.6], [6, 1.1], [10, 1.0]]), lz = kf(t, [[0, 2.4], [4.5, 1.4], [6, 0.4], [10, 0.4]]);
+    const lr = kf(t, [[0, 0], [4.5, 0.7], [5.6, 1.4], [10, 1.55]]);
+    put(W.leafTop, lx, WL + 0.04, lz, { rz: lr, s: 0.85 });
     put(W.eddy2, lx + 0.8, WL + 0.03, lz - 0.9, { rz: t * 0.8, s: 0.8, op: 0.7 });
     // 豆荚和小粒
-    const px = 3.2 + bob(t, 0.3, 0.12, 0.4), pz = -1.6;
+    const px = 3.4 + bob(t, 0.3, 0.12, 0.4), pz = -2.75;
     put(W.podTop, px, WL + 0.02, pz, { rz: 0.4 + bob(t, 0, 0.15, 0.3), s: 0.95 });
     actor(W.li2, 'li_cling', px - 0.1, WL + 0.05, pz + 0.2, { rx: up, s: 0.95 });
     ringFlat(W.ringTop, px, pz, 1.0, t % 3.3 + 1.0, 2.2, 2.4);
@@ -314,12 +315,12 @@ shot({
     put(W.waveA, kf(t, [[0, 2.6], [10, 1.8]], (x) => x), WL - 0.08 + bob(t, 0.6, 0.03), -3.4);
     // 菜叶：叶尖（左端）摆开
     const swing = kf(t, [[0, 0], [1.0, -0.35], [2.0, 0.05], [3.0, -0.45], [6.5, -0.55], [8.2, -0.35], [8.6, -0.25], [10, -0.3]]);
-    put(W.leaf, 0.7, WL + bob(t, 0, 0.03), -1.3, { ry: swing, s: 1.0 });
+    put(W.leaf, 1.6, WL + bob(t, 0, 0.03), -1.3, { ry: swing, s: 1.0 });
     // 豆荚 + 小粒（前景右）
     const slap = (t >= 2.4 && t < 2.8) ? -0.06 : 0;
     podRig(W, { x: 2.5, y: WL + bob(t, 0.4, 0.04) + slap, z: 0.9, ry: -0.15, rz: bob(t, 0.1, 0.04) }, { c: W.li, pose: t > 2.4 ? 'li_reach' : 'li_cling', dx: -0.3, dy: t > 2.4 ? 0.02 : -0.1 });
     // 纸船：先在左后方，转向后斜着钻过叶尖
-    const bx = kf(t, [[0, -2.5], [6.0, -2.4], [7.0, -2.2], [9.6, 0.3]], easeInOut);
+    const bx = kf(t, [[0, -3.1], [6.0, -3.0], [7.0, -2.6], [9.6, 0.0]], easeInOut);
     const bz = kf(t, [[0, -2.3], [6.0, -2.3], [7.0, -1.9], [9.6, -0.1]], easeInOut);
     const bry = kf(t, [[0, 0], [6.0, 0], [6.8, -0.75], [8.4, -0.5], [9.6, -0.15]]);
     const bow = t > 6.3 && t < 7.2;
@@ -406,7 +407,7 @@ shot({
     const lx = kf(t, [[0, -1.0], [3.6, 0.3], [11, 0.5]]);
     put(W.leaf, lx, WL + bob(t, 0, 0.02), 0.25, { s: 0.9 });
     const stemX = lx + 2.15;
-    const sr = kf(t, [[2.4, -0.25], [4.1, 0.55], [4.4, 0.42], [5.0, 0.3]], easeInOut);
+    const sr = kf(t, [[2.4, -0.25], [4.1, 0.55], [4.4, 0.42], [5.3, -0.05], [6.2, -0.4]], easeInOut);
     put(W.stem, stemX, WL + 0.06, 0.95, { rz: sr, s: 0.95 });
     // 木勺
     const kick = (t > 4.3 && t < 4.6) ? 0.04 : 0;
@@ -481,7 +482,7 @@ shot({
     ];
     const zOff = [0.16, 0.2, 0.24];
     walkers.forEach((w, i) => {
-      const startP = V(2.45 + 0.6 - i * 0.6, WL + 0.3, 1.62);
+      const startP = V(2.45 + 0.6 - i * 0.6, WL + 0.06, 1.6);
       if (t < w.t0) { actor(w.c, w.b, startP.x, startP.y, startP.z); return; }
       if (t < w.t1) {
         // 先跨上勺头，再沿勺子往上
