@@ -144,10 +144,10 @@ export function buildWorld(scene) {
 
   // 圆盘：后片 + 前沿片
   W.plate = add(new Cut('kitchen_plate', { w: 3.6, anchor: [0.5, 0.985], thick: 0.02 }));
-  W.plate.position.set(8.3, 0.01, 1.4);
+  W.plate.position.set(8.3, 0.01, 1.47);
   const plFront = { key: 'front', canvas: maskedCanvas('kitchen_plate', [[0, 0.5], [0.15, 0.72], [0.5, 0.80], [0.85, 0.72], [1, 0.5], [1, 1], [0, 1]]) };
   W.plateFront = add(new Cut('kitchen_plate', { w: 3.6, anchor: [0.5, 0.985], source: plFront, thick: 0.02 }));
-  W.plateFront.position.set(8.3, 0.01, 1.72);
+  W.plateFront.position.set(8.3, 0.01, 1.62);
 
   W.towel = add(new Cut('tea_towel', { w: 4.6, anchor: [0.5, 0.985], thick: 0.05 }));
 
