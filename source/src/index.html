@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>厨房里的大航海</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE  温柔、童趣，像一场在厨房台面上演的纸片小剧场
+IDEA   一张手工剪纸的定格动画放映台：片子本身就是画面
+PICTURE 全屏 16:9 的 3D 纸片场景，字幕与控制条像贴上去的纸条
+COLOUR 深墨绿夜幕衬托奶油纸色，芥黄作唯一强调色
+TYPE   ZCOOL KuaiLe 做片名，Noto Sans SC 做字幕与控件
+LAYOUT 影片居中铺满，控件悬浮底部，空闲时隐去
+*/
+:root{color-scheme:dark;--bg:#1d2622;--paper:#f6ecd8;--ink:#3b2a1c;--mustard:#e0a92e;--teal:#2f6f73}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;height:100%;background:var(--bg);overflow:hidden;font:16px/1.5 "Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;color:var(--paper)}
+#stage{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 45%,#2a3530 0%,#141a17 100%)}
+#frame{position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04);border-radius:6px}
+#c{display:block}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(130% 100% at 50% 50%,transparent 58%,rgba(40,24,10,.38) 100%)}
+#grain{position:absolute;inset:-10px;pointer-events:none;opacity:.07;mix-blend-mode:overlay}
+#fade{position:absolute;inset:0;background:#120d08;pointer-events:none;opacity:1}
+#end{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;font-family:"ZCOOL KuaiLe",sans-serif;color:var(--paper);font-size:calc(var(--fw,1280px)*.06);letter-spacing:.2em}
+#sub{position:absolute;left:50%;bottom:7.5%;transform:translateX(-50%) rotate(-.6deg);max-width:80%;padding:.35em .9em .4em;background:rgba(250,242,226,.94);color:var(--ink);border-radius:3px;font-size:calc(var(--fw,1280px)*.0215);font-weight:700;line-height:1.35;box-shadow:0 3px 0 rgba(0,0,0,.12),0 8px 18px rgba(0,0,0,.18);opacity:0;transition:opacity .12s;text-align:center;white-space:nowrap}
+#sub.on{opacity:1}
+#sub b{color:#a5561c;margin-right:.5em;font-weight:700}
+.nosub #sub{display:none}
+.capture #ctl{display:none!important}
+body:not(.started):not(.capture) #sub{display:none}
+/* 控制条 */
+#ctl{position:absolute;left:0;right:0;bottom:0;padding:28px 18px 14px;background:linear-gradient(transparent,rgba(12,10,8,.72));display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px 14px;align-items:center;opacity:0;transition:opacity .3s}
+.ui #ctl,body:not(.playing) #ctl{opacity:1}
+body:not(.ready) #ctl,body:not(.started) #ctl{display:none}
+#ctl button{appearance:none;border:0;background:rgba(255,248,232,.12);color:var(--paper);height:44px;min-width:44px;border-radius:22px;padding:0 14px;font:600 14px/1 inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+#ctl button:hover{background:rgba(255,248,232,.22)}
+#ctl button:focus-visible{outline:2px solid var(--mustard);outline-offset:2px}
+#ctl button[aria-pressed=false]{opacity:.55}
+#play{width:44px;padding:0!important;justify-content:center}
+#play svg{width:18px;height:18px}
+.playing #play .i-play,body:not(.playing) #play .i-pause{display:none}
+#track{position:relative;height:44px;display:flex;align-items:center}
+#bar{position:relative;height:6px;width:100%;background:rgba(255,248,232,.22);border-radius:3px;cursor:pointer;touch-action:none}
+#bar::before{content:"";position:absolute;inset:-14px 0}
+#bar i{position:absolute;left:0;top:0;bottom:0;background:var(--mustard);border-radius:3px}
+#marks{position:absolute;left:0;right:0;top:0;height:14px;pointer-events:none}
+#marks button{all:unset;position:absolute;top:-4px;width:2px;height:14px;background:rgba(255,248,232,.5);pointer-events:auto;cursor:pointer}
+#marks span{position:absolute;bottom:16px;left:-8px;font-size:11px;color:rgba(255,248,232,.6)}
+#meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+#time,#shot{font-size:13px;color:rgba(255,248,232,.8);white-space:nowrap;font-variant-numeric:tabular-nums}
+#shot{grid-column:1/-1;order:-1;font-size:13px;color:rgba(255,248,232,.7)}
+/* 封面 */
+#cover{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(90% 80% at 50% 40%,rgba(36,30,22,.25),rgba(14,11,8,.82));transition:opacity .6s;z-index:5}
+#cover.gone{opacity:0;pointer-events:none}
+.card{background:var(--paper);color:var(--ink);padding:clamp(18px,3.2vw,40px) clamp(22px,4vw,54px);border-radius:4px;transform:rotate(-1.2deg);box-shadow:0 2px 0 #d8c7a4,0 18px 50px rgba(0,0,0,.45);text-align:center;max-width:min(560px,86%);position:relative}
+.card::before{content:"";position:absolute;left:50%;top:-14px;width:110px;height:28px;transform:translateX(-50%) rotate(2deg);background:rgba(224,169,46,.75)}
+.card h1{font:400 clamp(32px,5.2vw,52px)/1.05 "ZCOOL KuaiLe",sans-serif;margin:.1em 0 .25em;letter-spacing:.06em}
+.card p{margin:0 0 1.1em;font-size:clamp(13px,1.6vw,16px);color:#6b5338}
+#start{appearance:none;border:0;background:var(--teal);color:#fff;font:700 18px/1 inherit;height:54px;padding:0 30px;border-radius:27px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 0 #1f4b4e}
+#start:disabled{background:#9b8c74;box-shadow:0 4px 0 #776a55;cursor:progress}
+#start:focus-visible{outline:3px solid var(--mustard);outline-offset:3px}
+#load{height:5px;background:#e3d3b2;border-radius:3px;margin:16px auto 6px;max-width:260px;overflow:hidden}
+#load i{display:block;height:100%;width:0;background:var(--mustard);transition:width .2s}
+#loadtxt{font-size:13px;color:#8a7253}
+.ready #load,.ready #loadtxt{display:none}
+.peas{display:flex;justify-content:center;gap:8px;margin-bottom:6px}
+.peas i{width:18px;height:18px;border-radius:50%;background:#7f9a3c;box-shadow:inset -3px -3px 0 rgba(0,0,0,.12)}
+.peas i:nth-child(2){background:#8fb04a}.peas i:nth-child(3){background:#b5d27a;width:14px;height:14px;margin-top:4px}
+@media(max-width:600px){#ctl{padding:18px 10px 8px;gap:4px 8px}#ctl button{padding:0 10px;font-size:12px}#time{display:none}#marks span{display:none}}
+@media(prefers-reduced-motion:reduce){#cover,#ctl,#sub{transition:none}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="frame">
+    <canvas id="c"></canvas>
+    <div id="vig"></div><div id="grain"></div>
+    <div id="sub" aria-live="polite"></div>
+    <div id="fade"></div>
+    <div id="end">完</div>
+    <div id="ctl">
+      <div id="shot">镜头 01</div>
+      <button id="play" aria-label="播放"><svg class="i-play" viewBox="0 0 20 20"><path d="M5 3l12 7-12 7z" fill="currentColor"/></svg><svg class="i-pause" viewBox="0 0 20 20"><path d="M4 3h4v14H4zM12 3h4v14h-4z" fill="currentColor"/></svg></button>
+      <div id="track"><div id="bar"><i></i><div id="marks"></div></div></div>
+      <div id="meta">
+        <span id="time">0:00 / 2:00</span>
+        <button id="subs" aria-pressed="true">字幕</button>
+        <button id="music" aria-pressed="true">配乐</button>
+        <button id="voice" aria-pressed="false" title="用系统语音朗读台词">朗读</button>
+        <button id="full" aria-label="全屏">全屏</button>
+      </div>
+    </div>
+    <div id="cover">
+      <div class="card">
+        <div class="peas"><i></i><i></i><i></i></div>
+        <h1>厨房里的大航海</h1>
+        <p>手绘纸片定格短片 · 约 2 分钟 · 建议打开声音</p>
+        <button id="start" disabled><svg width="16" height="16" viewBox="0 0 20 20"><path d="M5 3l12 7-12 7z" fill="currentColor"/></svg>开始放映</button>
+        <div id="load"><i></i></div>
+        <div id="loadtxt">正在铺纸片… 0%</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!--ASSETS-->
+<script>/*APP*/</script>
+</body>
+</html>
